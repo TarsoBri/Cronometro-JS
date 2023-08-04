@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Cronômetro-JS</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <h1>Cronômetro</h1>
+        
+        <input type="text" id="stopwatch">
+        <button id="start">Iniciar</button>
+        <button id="pause">Pausar</button>
+        <button id="stop">Parar</button>
+        
+        <script>
+            
+            (function(){
+                
+                var $stopwatch = document.querySelector('#stopwatch');
+                var $start = document.querySelector('#start');
+                var $pause = document.querySelector('#pause');
+                var $stop = document.querySelector('#stop');
+                
+                $start.addEventListener('click', starTime);
+                $pause.addEventListener('click', pauseTime);
+                $stop.addEventListener('click', stopTime);
+                  
+                var msClickStart = 0;
+
+                function starTime(){
+                    msClickStart = Date.now();
+                    startStopwatch();
+                }
+                function startStopwatch(){
+                    setInterval(function(){
+                        var msNow = Date.now();
+                        var difference = msNow - msClickStart;
+                        $stopwatch.value = difference;
+                    }, 100)
+                }
+
+                function pauseTime(){
+
+                }
+
+                function stopTime(){
+
+                }
+
+            })()
+            
+        </script>
+    </body>
+</html>
