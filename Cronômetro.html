@@ -8,7 +8,7 @@
     <body>
         <h1>Cronômetro</h1>
         
-        <input type="text" id="stopwatch">
+        <input type="text" id="stopwatch" value="0">
         <button id="start">Iniciar</button>
         <button id="pause">Pausar</button>
         <button id="stop">Parar</button>
@@ -16,7 +16,6 @@
         <script>
             
             (function(){
-                
                 var $stopwatch = document.querySelector('#stopwatch');
                 var $start = document.querySelector('#start');
                 var $pause = document.querySelector('#pause');
@@ -33,19 +32,37 @@
                     startStopwatch();
                 }
                 function startStopwatch(){
-                    setInterval(function(){
+                        setInterval(function(){
                         var msNow = Date.now();
                         var difference = msNow - msClickStart;
-                        $stopwatch.value = difference;
-                    }, 100)
+                        $stopwatch.value = formatHour(difference);
+                    }, 1);
                 }
 
+                function formatHour(ms){
+                    if(ms < 1000){ // Less that 1 Second
+                        return ms;
+                    } else if(ms < 60000){ // Less that 1 Minute
+                        var s = addZero(parseInt(ms/1000));
+                        var c = ms - (s * 1000);
+                        return s + ':' + c;
+                    } else{ // Bigger that 1 Minute
+                        var m = addZero(parseInt(ms / (60000)));
+                        var s = addZero(parseInt(ms / 1000 - (m * 60)));
+                        var c = ms - (s * 1000) - (m * 60 * 1000);
+                        return m + ':' + s + ':' + c;
+                    }
+                }
+                function addZero(t){
+                return t = t < 10 ? '0' + t : t;
+                }
+                
                 function pauseTime(){
-
+                
                 }
-
+                
                 function stopTime(){
-
+                    
                 }
 
             })()
