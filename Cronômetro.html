@@ -26,16 +26,43 @@
                 $stop.addEventListener('click', stopTime);
                   
                 var msClickStart = 0;
+                var interval = null;
+                var msClickPause = 0;
+                var msPastTime = 0;
+                var running = false;
+
 
                 function starTime(){
                     msClickStart = Date.now();
                     startStopwatch();
+                    running = true;
                 }
-                function startStopwatch(){
-                        setInterval(function(){
+                 
+                function pauseTime(){
+                    if(running){
+                        running = false;
+                        clearInterval(interval);
+                        msClickPause = Date.now();
+                        msPastTime += (msClickPause - msClickStart); 
+                    } else{
+                        running = true;
+                        msClickStart = Date.now()
+                        startStopwatch(msPastTime);
+                    }
+                }
+                
+                function stopTime(){
+                    
+                }
+
+
+                
+                function startStopwatch(pastTime){
+                        var _ms = pastTime || 0;
+                        interval = setInterval(function(){
                         var msNow = Date.now();
                         var difference = msNow - msClickStart;
-                        $stopwatch.value = formatHour(difference);
+                        $stopwatch.value = formatHour(difference + _ms);
                     }, 1);
                 }
 
@@ -55,14 +82,6 @@
                 }
                 function addZero(t){
                 return t = t < 10 ? '0' + t : t;
-                }
-                
-                function pauseTime(){
-                
-                }
-                
-                function stopTime(){
-                    
                 }
 
             })()
