@@ -26,33 +26,39 @@
                 $stop.addEventListener('click', stopTime);
                   
                 var msClickStart = 0;
-                var interval = null;
                 var msClickPause = 0;
                 var msPastTime = 0;
+                var interval = null;
                 var running = false;
 
 
                 function starTime(){
+                    if(running) return;
+                    running = true;
                     msClickStart = Date.now();
                     startStopwatch();
-                    running = true;
                 }
                  
                 function pauseTime(){
-                    if(running){
-                        running = false;
-                        clearInterval(interval);
-                        msClickPause = Date.now();
-                        msPastTime += (msClickPause - msClickStart); 
-                    } else{
-                        running = true;
-                        msClickStart = Date.now()
-                        startStopwatch(msPastTime);
-                    }
+                    if($stopwatch.value == 0) return;
+                        if(running){
+                            clearInterval(interval);
+                            msClickPause = Date.now();
+                            msPastTime += (msClickPause - msClickStart); 
+                        } else{
+                            msClickStart = Date.now();
+                            startStopwatch(msPastTime);
+                        }
+                        running = !running;
                 }
                 
                 function stopTime(){
-                    
+                        running = false;
+                        clearInterval(interval);
+                        $stopwatch.value = 0;
+                        msClickStart = 0;
+                        msClickPause = 0;
+                        msPastTime = 0;
                 }
 
 
@@ -67,19 +73,24 @@
                 }
 
                 function formatHour(ms){
-                    if(ms < 1000){ // Less that 1 Second
+
+                    const MINUTEMS = 60 * 1000;
+                    const SECONDMS = 1000;
+
+                    if(ms < SECONDMS){ // Less that 1 Second
                         return ms;
-                    } else if(ms < 60000){ // Less that 1 Minute
-                        var s = addZero(parseInt(ms/1000));
-                        var c = ms - (s * 1000);
+                    } else if(ms < MINUTEMS){ // Less that 1 Minute
+                        var s = addZero(parseInt(ms/SECONDMS));
+                        var c = ms - (s * SECONDMS);
                         return s + ':' + c;
                     } else{ // Bigger that 1 Minute
-                        var m = addZero(parseInt(ms / (60000)));
-                        var s = addZero(parseInt(ms / 1000 - (m * 60)));
-                        var c = ms - (s * 1000) - (m * 60 * 1000);
+                        var m = addZero(parseInt(ms / (MINUTEMS)));
+                        var s = addZero(parseInt(ms / SECONDMS - (m * 60)));
+                        var c = ms - (s * SECONDMS) - (m * MINUTEMS);
                         return m + ':' + s + ':' + c;
                     }
                 }
+                
                 function addZero(t){
                 return t = t < 10 ? '0' + t : t;
                 }
