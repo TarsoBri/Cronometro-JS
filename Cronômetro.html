@@ -4,16 +4,61 @@
         <title>Cronômetro-JS</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            body{
+                color: white;
+                font-family: Arial, Helvetica, sans-serif;
+                margin: 0;
+                padding: 0;
+                background-color: rgb(33, 49, 66);
+            }
+            h1{
+                text-align: center;
+            }
+            #sectionStopwatch{
+                font-size: 52px;
+                background-color: rgb(104, 151, 151);
+                height: 250px;
+                display: flex;
+                align-items: center;
+                flex-direction: column;
+                justify-content: center;
+            }  
+            
+            #buttons{
+                height: 80px;
+            }
+
+            #buttons button{
+                font-size: 18px;
+                padding: 12px;
+                align-items: center;
+                border: none;
+                color: white;
+                background-color: rgb(33, 49, 66);
+                transition: all .3s;
+                border-radius: 10%;
+            }
+            #buttons button:hover{
+                padding: 14px;
+                font-size: 22px;
+                cursor: pointer;
+            }
+        </style>
     </head>
     <body>
         <h1>Cronômetro</h1>
         
-        <input type="text" id="stopwatch" value="0">
-        
-        <button id="start">Iniciar</button>
-        <button id="pause">Pausar</button>
-        <button id="stop">Parar</button>
-        
+        <section id="sectionStopwatch">
+            <div id="stopwatch"></div>
+            
+            <div id="buttons">
+                <button id="start">Iniciar</button>
+                <button id="pause">Pausar</button>
+                <button id="stop">Zerar</button>
+            </div>
+        </section>
+            
         <script>
             
             (function(){
@@ -25,14 +70,17 @@
                 $start.addEventListener('click', starTime);
                 $pause.addEventListener('click', pauseTime);
                 $stop.addEventListener('click', stopTime);
-                  
+                
+                const resetValue = '00:00:000'
+                $stopwatch.textContent = resetValue;
+                
                 var msClickStart = 0;
                 var msClickPause = 0;
                 var msPastTime = 0;
                 var interval = null;
                 var running = false;
-
-
+                
+                
                 function starTime(){
                     if(running) return;
                     stopTime();
@@ -42,26 +90,30 @@
                 }
                  
                 function pauseTime(){
-                    if($stopwatch.value == 0) return;
-                        if(running){
-                            clearInterval(interval);
-                            msClickPause = Date.now();
-                            msPastTime += (msClickPause - msClickStart); 
-                        } else{
+                    if($stopwatch.textContent == resetValue) return;
+                    if(running){
+                        clearInterval(interval);
+                        msClickPause = Date.now();
+                        msPastTime += (msClickPause - msClickStart); 
+                        $pause.textContent = 'Despausar';
+                    } else{
                             msClickStart = Date.now();
                             startStopwatch(msPastTime);
+                            $pause.textContent = 'Pausar';
                         }
                         running = !running;
-                }
-                
+                    }
+                    
                 function stopTime(){
-                        running = false;
                         clearInterval(interval);
-                        $stopwatch.value = 0;
+                        running = false;
+                        $stopwatch.textContent = resetValue;
                         msClickStart = 0;
                         msClickPause = 0;
                         msPastTime = 0;
-                }
+                        $pause.textContent = 'Pausar';
+                    }
+                   
 
 
                 
@@ -70,7 +122,7 @@
                         interval = setInterval(function(){
                         var msNow = Date.now();
                         var difference = msNow - msClickStart;
-                        $stopwatch.value = formatHour(difference + _ms);
+                        $stopwatch.textContent = formatHour(difference + _ms);
                     }, 1);
                 }
 
@@ -80,20 +132,27 @@
                     const SECONDMS = 1000;
 
                     if(ms < SECONDMS){ // Less that 1 Second
-                        return ms;
+                        return '00' + ':' + '00' + ':' + ms;
                     } else if(ms < MINUTEMS){ // Less that 1 Minute
                         var s = addZero(parseInt(ms/SECONDMS));
-                        var c = ms - (s * SECONDMS);
-                        return s + ':' + c;
+                        var c = addZeroC(parseInt(ms - (s * SECONDMS)));
+                        return '00' + ':' + s + ':' + c;
+                        
                     } else{ // Bigger that 1 Minute
                         var m = addZero(parseInt(ms / (MINUTEMS)));
-                 
-                        return m + ':' + formatHour( ms - m * MINUTEMS);
+                        var s = addZero(parseInt(ms / SECONDMS - (m * 60)));
+                        var c = addZeroC(ms - (s * SECONDMS) - (m * MINUTEMS));
+                        return m + ':' + s + ':' + c;
                     }
                 }
                 
                 function addZero(t){
-                return t = t < 10 ? '0' + t : t;
+                    return t = t < 10 ? '0' + t : t;
+                }
+                function addZeroC(t){
+                    if(t < 10){t = '00' + t;} 
+                    else if(t < 100){t = '0' + t;}
+                    return t;
                 }
 
             })()
